@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="01-create-samples-table" author="junie">
+        <createTable tableName="samples">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="patient_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collected_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="samples" indexName="idx_patient_id">
+            <column name="patient_id"/>
+        </createIndex>
+
+        <createIndex tableName="samples" indexName="idx_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex tableName="samples" indexName="idx_collected_at">
+            <column name="collected_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
