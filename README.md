@@ -17,16 +17,33 @@ A Spring Boot-based backend service for managing clinical blood samples, includi
 - Java 21
 - Maven 3.9+
 - Docker (for running tests with Testcontainers)
-- PostgreSQL (for running the application locally)
+- PostgreSQL (optional, if not using Docker Compose)
 
 ## How to Run
 
-### Local Execution
+### Docker Compose (Recommended)
+
+To run the entire stack (Application + PostgreSQL database) using Docker Compose:
+
+1. Ensure Docker and Docker Compose are installed.
+2. Verify the settings in the `.env` file (you can rename provided `.env.example` with default credentials into `.env`).
+3. Build and start the containers:
+   ```bash
+   docker-compose up --build
+   ```
+4. The application will be available at `http://localhost:8080`.
+5. Database connection settings can be managed via the `.env` file without changing the configuration files.
+
+### Configuration
+Sensitive data and connection URLs are managed via the `.env` file in the project root. You can modify database credentials, ports, and connection strings there without touching the code or Docker configuration.
+
+### Local Execution (Manual)
 
 1. Ensure a PostgreSQL instance is running.
 2. Configure database credentials in `src/main/resources/application.yaml` or set environment variables:
-   - `DB_USER`
-   - `DB_PASSWORD`
+   - `SPRING_DATASOURCE_USERNAME`
+   - `SPRING_DATASOURCE_PASSWORD`
+   - `SPRING_DATASOURCE_URL`
 3. Run the application using Maven:
    ```bash
    ./mvnw spring-boot:run
