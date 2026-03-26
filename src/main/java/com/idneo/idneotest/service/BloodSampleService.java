@@ -32,8 +32,6 @@ public class BloodSampleService {
     @Transactional
     public BloodSampleResponseDto registerSample(BloodSampleRequestDto requestDto) {
         BloodSample sample = sampleMapper.toEntity(requestDto);
-        sample.setStatus(BloodSampleStatus.REGISTERED);
-        sample.setProcessedAt(null);
         BloodSample savedSample = sampleRepository.save(sample);
         return sampleMapper.toResponseDto(savedSample);
     }
