@@ -2,10 +2,13 @@ package com.idneo.idneotest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.idneo.idneotest.domain.exception.BloodSampleAlreadyProcessedException;
+import com.idneo.idneotest.domain.exception.BloodSampleNotFoundException;
 import com.idneo.idneotest.domain.model.BloodSampleStatus;
 import com.idneo.idneotest.dto.BloodSampleRequestDto;
 import com.idneo.idneotest.dto.BloodSampleResponseDto;
 import com.idneo.idneotest.service.BloodSampleService;
+import com.idneo.idneotest.domain.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BloodSampleController.class)
-@Import(com.fasterxml.jackson.databind.ObjectMapper.class)
+@Import({ObjectMapper.class, GlobalExceptionHandler.class})
 class BloodSampleControllerTest {
 
     @Autowired
@@ -61,15 +64,6 @@ class BloodSampleControllerTest {
                 .andExpect(jsonPath("$.status").value("REGISTERED"));
     }
 
-    @Test
-    void registerSampleShouldReturn400WhenInvalidRequest() throws Exception {
-        BloodSampleRequestDto invalidRequest = new BloodSampleRequestDto(null, null);
-
-        mockMvc.perform(post("/blood-sample")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     void getSamplesShouldReturnList() throws Exception {
@@ -98,5 +92,43 @@ class BloodSampleControllerTest {
                 .andExpect(jsonPath("$.id").value(sampleId.toString()))
                 .andExpect(jsonPath("$.status").value("PROCESSED"))
                 .andExpect(jsonPath("$.processedAt").exists());
+    }
+
+    @Test
+    void processSampleShouldReturn404WhenNotFound() throws Exception {
+        UUID sampleId = UUID.randomUUID();
+        when(sampleService.processSample(eq(sampleId))).thenThrow(new BloodSampleNotFoundException("Not found"));
+
+        mockMvc.perform(patch("/blood-sample/{id}/process", sampleId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("Not found"))
+                .andExpect(jsonPath("$.path").value("/blood-sample/" + sampleId + "/process"));
+    }
+
+    @Test
+    void processSampleShouldReturn409WhenAlreadyProcessed() throws Exception {
+        UUID sampleId = UUID.randomUUID();
+        when(sampleService.processSample(eq(sampleId))).thenThrow(new BloodSampleAlreadyProcessedException("Already processed"));
+
+        mockMvc.perform(patch("/blood-sample/{id}/process", sampleId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("ALREADY_PROCESSED"))
+                .andExpect(jsonPath("$.message").value("Already processed"));
+    }
+
+    @Test
+    void registerSampleShouldReturn400WithErrorResponse() throws Exception {
+        BloodSampleRequestDto invalidRequest = new BloodSampleRequestDto(null, null);
+
+        mockMvc.perform(post("/blood-sample")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").exists());
     }
 }
