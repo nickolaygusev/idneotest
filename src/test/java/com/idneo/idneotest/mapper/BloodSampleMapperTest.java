@@ -1,9 +1,9 @@
 package com.idneo.idneotest.mapper;
 
-import com.idneo.idneotest.domain.model.Sample;
-import com.idneo.idneotest.domain.model.SampleStatus;
-import com.idneo.idneotest.dto.SampleRequestDto;
-import com.idneo.idneotest.dto.SampleResponseDto;
+import com.idneo.idneotest.domain.model.BloodSample;
+import com.idneo.idneotest.domain.model.BloodSampleStatus;
+import com.idneo.idneotest.dto.BloodSampleRequestDto;
+import com.idneo.idneotest.dto.BloodSampleResponseDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -12,26 +12,26 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SampleMapperTest {
+class BloodSampleMapperTest {
 
-    private final SampleMapper mapper = Mappers.getMapper(SampleMapper.class);
+    private final BloodSampleMapper mapper = Mappers.getMapper(BloodSampleMapper.class);
 
     @Test
     void shouldMapRequestDtoToEntity() {
         // Given
         UUID patientId = UUID.randomUUID();
         Instant collectedAt = Instant.now();
-        SampleRequestDto requestDto = new SampleRequestDto(patientId, collectedAt);
+        BloodSampleRequestDto requestDto = new BloodSampleRequestDto(patientId, collectedAt);
 
         // When
-        Sample entity = mapper.toEntity(requestDto);
+        BloodSample entity = mapper.toEntity(requestDto);
 
         // Then
         assertThat(entity).isNotNull();
         assertThat(entity.getPatientId()).isEqualTo(patientId);
         assertThat(entity.getCollectedAt()).isEqualTo(collectedAt);
         assertThat(entity.getId()).isNull();
-        assertThat(entity.getStatus()).isEqualTo(SampleStatus.REGISTERED); // Default in entity
+        assertThat(entity.getStatus()).isEqualTo(BloodSampleStatus.REGISTERED); // Default in entity
         assertThat(entity.getProcessedAt()).isNull();
     }
 
@@ -42,22 +42,22 @@ class SampleMapperTest {
         UUID patientId = UUID.randomUUID();
         Instant collectedAt = Instant.now();
         Instant processedAt = Instant.now().plusSeconds(3600);
-        Sample entity = Sample.builder()
+        BloodSample entity = BloodSample.builder()
                 .id(id)
                 .patientId(patientId)
-                .status(SampleStatus.PROCESSED)
+                .status(BloodSampleStatus.PROCESSED)
                 .collectedAt(collectedAt)
                 .processedAt(processedAt)
                 .build();
 
         // When
-        SampleResponseDto responseDto = mapper.toResponseDto(entity);
+        BloodSampleResponseDto responseDto = mapper.toResponseDto(entity);
 
         // Then
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.id()).isEqualTo(id);
         assertThat(responseDto.patientId()).isEqualTo(patientId);
-        assertThat(responseDto.status()).isEqualTo(SampleStatus.PROCESSED);
+        assertThat(responseDto.status()).isEqualTo(BloodSampleStatus.PROCESSED);
         assertThat(responseDto.collectedAt()).isEqualTo(collectedAt);
         assertThat(responseDto.processedAt()).isEqualTo(processedAt);
     }

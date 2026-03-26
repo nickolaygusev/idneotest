@@ -5,7 +5,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record SampleRequestDto(
+public record BloodSampleRequestDto(
     @NotNull(message = "patientId must not be null")
     UUID patientId,
     

@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Register Sample",
+			"name": "Register Blood Sample",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -21,12 +21,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/sample",
+					"raw": "{{baseUrl}}/blood-sample",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"sample"
+						"blood-sample"
 					]
 				},
 				"description": "Registers a new blood sample."
@@ -34,17 +34,17 @@
 			"response": []
 		},
 		{
-			"name": "Get Samples",
+			"name": "Get Blood Samples",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/sample?status=REGISTERED&patientId={{patientId}}&fromDate=2023-01-01T00:00:00Z&toDate=2026-12-31T23:59:59Z",
+					"raw": "{{baseUrl}}/blood-sample?status=REGISTERED&patientId={{patientId}}&fromDate=2023-01-01T00:00:00Z&toDate=2026-12-31T23:59:59Z",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"sample"
+						"blood-sample"
 					],
 					"query": [
 						{
@@ -74,18 +74,18 @@
 			"response": []
 		},
 		{
-			"name": "Process Sample",
+			"name": "Process Blood Sample",
 			"request": {
 				"method": "PATCH",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/sample/{{sampleId}}/process",
+					"raw": "{{baseUrl}}/blood-sample/{{bloodSampleId}}/process",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"sample",
-						"{{sampleId}}",
+						"blood-sample",
+						"{{bloodSampleId}}",
 						"process"
 					]
 				},
@@ -126,7 +126,7 @@
 			"type": "string"
 		},
 		{
-			"key": "sampleId",
+			"key": "bloodSampleId",
 			"value": "uuid-here",
 			"type": "string"
 		}

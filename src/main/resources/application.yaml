@@ -2,7 +2,7 @@ spring:
   application:
     name: idneotest
   datasource:
-    url: jdbc:postgresql://localhost:5432/samples_db
+    url: jdbc:postgresql://localhost:5432/blood_samples_db
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver

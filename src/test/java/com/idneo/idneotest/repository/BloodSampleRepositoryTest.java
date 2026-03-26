@@ -1,7 +1,7 @@
 package com.idneo.idneotest.repository;
 
-import com.idneo.idneotest.domain.model.Sample;
-import com.idneo.idneotest.domain.model.SampleStatus;
+import com.idneo.idneotest.domain.model.BloodSample;
+import com.idneo.idneotest.domain.model.BloodSampleStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -20,34 +20,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class SampleRepositoryTest {
+class BloodSampleRepositoryTest {
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
     @Autowired
-    private SampleRepository sampleRepository;
+    private BloodSampleRepository sampleRepository;
 
     @Test
     void shouldSaveAndRetrieveSample() {
         // Given
         UUID patientId = UUID.randomUUID();
-        Sample sample = Sample.builder()
+        BloodSample sample = BloodSample.builder()
                 .patientId(patientId)
-                .status(SampleStatus.REGISTERED)
+                .status(BloodSampleStatus.REGISTERED)
                 .collectedAt(Instant.now())
                 .build();
 
         // When
-        Sample savedSample = sampleRepository.save(sample);
+        BloodSample savedSample = sampleRepository.save(sample);
 
         // Then
         assertThat(savedSample.getId()).isNotNull();
-        Optional<Sample> retrievedSample = sampleRepository.findById(savedSample.getId());
+        Optional<BloodSample> retrievedSample = sampleRepository.findById(savedSample.getId());
         assertThat(retrievedSample).isPresent();
         assertThat(retrievedSample.get().getPatientId()).isEqualTo(patientId);
-        assertThat(retrievedSample.get().getStatus()).isEqualTo(SampleStatus.REGISTERED);
+        assertThat(retrievedSample.get().getStatus()).isEqualTo(BloodSampleStatus.REGISTERED);
     }
 
     @Test
@@ -56,21 +56,21 @@ class SampleRepositoryTest {
         UUID patientId = UUID.randomUUID();
         Instant collectedAt = Instant.now().minusSeconds(100);
         Instant processedAt = Instant.now();
-        Sample sample = Sample.builder()
+        BloodSample sample = BloodSample.builder()
                 .patientId(patientId)
-                .status(SampleStatus.PROCESSED)
+                .status(BloodSampleStatus.PROCESSED)
                 .collectedAt(collectedAt)
                 .processedAt(processedAt)
                 .build();
 
         // When
-        Sample savedSample = sampleRepository.saveAndFlush(sample);
+        BloodSample savedSample = sampleRepository.saveAndFlush(sample);
 
         // Then
         assertThat(savedSample.getId()).isNotNull();
-        Sample found = sampleRepository.findById(savedSample.getId()).orElseThrow();
+        BloodSample found = sampleRepository.findById(savedSample.getId()).orElseThrow();
         assertThat(found.getPatientId()).isEqualTo(patientId);
-        assertThat(found.getStatus()).isEqualTo(SampleStatus.PROCESSED);
+        assertThat(found.getStatus()).isEqualTo(BloodSampleStatus.PROCESSED);
         assertThat(found.getCollectedAt()).isEqualTo(collectedAt);
         assertThat(found.getProcessedAt()).isEqualTo(processedAt);
     }

@@ -2,10 +2,10 @@ package com.idneo.idneotest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.idneo.idneotest.domain.model.SampleStatus;
-import com.idneo.idneotest.dto.SampleRequestDto;
-import com.idneo.idneotest.dto.SampleResponseDto;
-import com.idneo.idneotest.service.SampleService;
+import com.idneo.idneotest.domain.model.BloodSampleStatus;
+import com.idneo.idneotest.dto.BloodSampleRequestDto;
+import com.idneo.idneotest.dto.BloodSampleResponseDto;
+import com.idneo.idneotest.service.BloodSampleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +25,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(SampleController.class)
+@WebMvcTest(BloodSampleController.class)
 @Import(com.fasterxml.jackson.databind.ObjectMapper.class)
-class SampleControllerTest {
+class BloodSampleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private SampleService sampleService;
+    private BloodSampleService sampleService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -47,12 +47,12 @@ class SampleControllerTest {
     void registerSampleShouldReturn201() throws Exception {
         UUID patientId = UUID.randomUUID();
         Instant collectedAt = Instant.now();
-        SampleRequestDto requestDto = new SampleRequestDto(patientId, collectedAt);
-        SampleResponseDto responseDto = new SampleResponseDto(UUID.randomUUID(), patientId, SampleStatus.REGISTERED, collectedAt, null);
+        BloodSampleRequestDto requestDto = new BloodSampleRequestDto(patientId, collectedAt);
+        BloodSampleResponseDto responseDto = new BloodSampleResponseDto(UUID.randomUUID(), patientId, BloodSampleStatus.REGISTERED, collectedAt, null);
 
-        when(sampleService.registerSample(any(SampleRequestDto.class))).thenReturn(responseDto);
+        when(sampleService.registerSample(any(BloodSampleRequestDto.class))).thenReturn(responseDto);
 
-        mockMvc.perform(post("/sample")
+        mockMvc.perform(post("/blood-sample")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
@@ -63,9 +63,9 @@ class SampleControllerTest {
 
     @Test
     void registerSampleShouldReturn400WhenInvalidRequest() throws Exception {
-        SampleRequestDto invalidRequest = new SampleRequestDto(null, null);
+        BloodSampleRequestDto invalidRequest = new BloodSampleRequestDto(null, null);
 
-        mockMvc.perform(post("/sample")
+        mockMvc.perform(post("/blood-sample")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -74,11 +74,11 @@ class SampleControllerTest {
     @Test
     void getSamplesShouldReturnList() throws Exception {
         UUID patientId = UUID.randomUUID();
-        SampleResponseDto responseDto = new SampleResponseDto(UUID.randomUUID(), patientId, SampleStatus.REGISTERED, Instant.now(), null);
+        BloodSampleResponseDto responseDto = new BloodSampleResponseDto(UUID.randomUUID(), patientId, BloodSampleStatus.REGISTERED, Instant.now(), null);
         
         when(sampleService.getSamples(any(), any(), any(), any())).thenReturn(List.of(responseDto));
 
-        mockMvc.perform(get("/sample")
+        mockMvc.perform(get("/blood-sample")
                         .param("patientId", patientId.toString())
                         .param("status", "REGISTERED"))
                 .andExpect(status().isOk())
@@ -89,11 +89,11 @@ class SampleControllerTest {
     @Test
     void processSampleShouldReturn200() throws Exception {
         UUID sampleId = UUID.randomUUID();
-        SampleResponseDto responseDto = new SampleResponseDto(sampleId, UUID.randomUUID(), SampleStatus.PROCESSED, Instant.now(), Instant.now());
+        BloodSampleResponseDto responseDto = new BloodSampleResponseDto(sampleId, UUID.randomUUID(), BloodSampleStatus.PROCESSED, Instant.now(), Instant.now());
 
         when(sampleService.processSample(eq(sampleId))).thenReturn(responseDto);
 
-        mockMvc.perform(patch("/sample/{id}/process", sampleId))
+        mockMvc.perform(patch("/blood-sample/{id}/process", sampleId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(sampleId.toString()))
                 .andExpect(jsonPath("$.status").value("PROCESSED"))
