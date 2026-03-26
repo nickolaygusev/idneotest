@@ -51,6 +51,7 @@ Sensitive data and connection URLs are managed via the `.env` file in the projec
 
 ### Documentation
 
+- **OpenAPI**: The application exposes an OpenAPI specification at `http://localhost:8080/v3/api-docs` or it can be viewed in the `blood-samples-openapi-doc.json` file.
 - **OpenAPI UI**: Once the app is running, access the Swagger UI at `http://localhost:8080/swagger-ui.html`.
 - **Postman**: A collection is provided in `BloodSampleManagement.postman_collection.json`.
 
