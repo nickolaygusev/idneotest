@@ -1,5 +1,6 @@
 package com.idneo.idneotest.service;
 
+import com.idneo.idneotest.domain.event.BloodSampleProcessedEvent;
 import com.idneo.idneotest.domain.exception.BloodSampleAlreadyProcessedException;
 import com.idneo.idneotest.domain.exception.BloodSampleNotFoundException;
 import com.idneo.idneotest.domain.model.BloodSample;
@@ -10,6 +11,7 @@ import com.idneo.idneotest.mapper.BloodSampleMapper;
 import com.idneo.idneotest.repository.BloodSampleRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class BloodSampleService {
 
     private final BloodSampleRepository sampleRepository;
     private final BloodSampleMapper sampleMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public BloodSampleResponseDto registerSample(BloodSampleRequestDto requestDto) {
@@ -71,9 +74,17 @@ public class BloodSampleService {
         }
 
         sample.setStatus(BloodSampleStatus.PROCESSED);
-        sample.setProcessedAt(Instant.now());
+        Instant processedAt = Instant.now();
+        sample.setProcessedAt(processedAt);
 
         BloodSample updatedSample = sampleRepository.save(sample);
+
+        eventPublisher.publishEvent(new BloodSampleProcessedEvent(
+                updatedSample.getId(),
+                updatedSample.getPatientId(),
+                processedAt
+        ));
+
         return sampleMapper.toResponseDto(updatedSample);
     }
 }

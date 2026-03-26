@@ -1,5 +1,6 @@
 package com.idneo.idneotest.service;
 
+import com.idneo.idneotest.domain.event.BloodSampleProcessedEvent;
 import com.idneo.idneotest.domain.exception.BloodSampleAlreadyProcessedException;
 import com.idneo.idneotest.domain.exception.BloodSampleNotFoundException;
 import com.idneo.idneotest.domain.model.BloodSample;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
@@ -33,6 +35,9 @@ class BloodSampleServiceTest {
 
     @Mock
     private BloodSampleMapper sampleMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private BloodSampleService sampleService;
@@ -101,6 +106,7 @@ class BloodSampleServiceTest {
         assertThat(sample.getStatus()).isEqualTo(BloodSampleStatus.PROCESSED);
         assertThat(sample.getProcessedAt()).isNotNull();
         verify(sampleRepository).save(sample);
+        verify(eventPublisher).publishEvent(any(BloodSampleProcessedEvent.class));
     }
 
     @Test
